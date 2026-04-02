@@ -1,0 +1,9 @@
+node_modules
+.env
+.env.*
+*.log
+bun.lock
+Dockerfile*
+.dockerignore
+.gitignore
+schema.sql
