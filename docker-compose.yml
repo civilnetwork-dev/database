@@ -44,7 +44,7 @@ services:
       REDIS_URL: redis://redis:6379
       DB_0: postgres://civil:${DB_PASSWORD:-changeme}@postgres:5432/civil2
     ports:
-      - "${PORT:-4000}:4000"
+      - "127.0.0.1:${PORT:-4000}:4000"
 
 volumes:
   postgres_data:

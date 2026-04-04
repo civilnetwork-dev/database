@@ -1,0 +1,10 @@
+src/
+scripts/
+schema.sql
+Dockerfile*
+tsconfig.json
+.env*
+.gitignore
+biome.json
+*.lock
+docker-compose*

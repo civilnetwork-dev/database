@@ -1,9 +1,8 @@
 {
-    "name": "@civilnetwork-dev/database",
+    "name": "@quartinal/civil-database",
     "license": "GPL-3.0",
     "author": "Quartinal (Jasper Quartarolo)",
-    "private": true,
-    "main": "src/run.ts",
+    "version": "0.0.3",
     "bin": {
         "civil2-db": "dist/civil2-db"
     },
@@ -13,6 +12,9 @@
             "types": "./dist/types/client/index.d.ts"
         }
     },
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "build": "bun run scripts/build.ts",
         "start": "./dist/civil2-db",
@@ -25,7 +27,7 @@
         "@types/bun": "^1.3.11",
         "bun-plugin-dts": "^0.4.0",
         "graphql": "^16.13.2",
-        "graphql-yoga": "^5.19.0",
+        "graphql-yoga": "^5.21.0",
         "ioredis": "^5.10.1",
         "postgres": "^3.4.8"
     }

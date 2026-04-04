@@ -1,4 +1,4 @@
-import { matchBannedDomain } from "../shared/banned-domains";
+import { initBannedDomains, matchBannedDomain } from "../shared/banned-domains";
 
 export interface TrackResult {
     userBanned: boolean;
@@ -71,6 +71,8 @@ export function createCivil2Client(options: {
 }): Civil2Client {
     const { endpoint, dev = false } = options;
 
+    const bannedDomainsReady = initBannedDomains();
+
     let dbPromise: Promise<IDBDatabase> | null = null;
     const getDB = () => (dbPromise ??= openIDB());
 
@@ -116,21 +118,19 @@ export function createCivil2Client(options: {
             cachedBan = true;
         }
 
+        async function devIsUserBanned(): Promise<boolean> {
+            if (cachedBan !== null) return cachedBan;
+            const id = await getUserId();
+            const db = await getDB();
+            const user = await idbGet<{ isBanned: boolean }>(db, "users", id);
+            cachedBan = user?.isBanned ?? false;
+            return cachedBan;
+        }
+
         return {
             getUserId,
 
-            async isUserBanned(): Promise<boolean> {
-                if (cachedBan !== null) return cachedBan;
-                const id = await getUserId();
-                const db = await getDB();
-                const user = await idbGet<{ isBanned: boolean }>(
-                    db,
-                    "users",
-                    id,
-                );
-                cachedBan = user?.isBanned ?? false;
-                return cachedBan;
-            },
+            isUserBanned: devIsUserBanned,
 
             async trackVisit(url: string): Promise<TrackResult> {
                 const id = await getUserId();
@@ -143,10 +143,11 @@ export function createCivil2Client(options: {
                     visitedAt: new Date().toISOString(),
                 });
 
-                if (cachedBan || (await this.isUserBanned())) {
+                if (cachedBan || (await devIsUserBanned())) {
                     return { userBanned: true, banReason: "Previously banned" };
                 }
 
+                await bannedDomainsReady;
                 const match = matchBannedDomain(url);
                 if (match) {
                     const reason = `Visited restricted domain: ${match}`;
